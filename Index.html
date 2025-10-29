@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Track & Trace - Admin</title>
+<style>
+    body { font-family: Arial; margin: 20px; }
+    h2,h3 { text-align: center; }
+    .logo { display: block; margin: 0 auto 20px; max-width: 200px; }
+    .container { display: flex; gap: 20px; }
+    .column { flex: 1; padding: 10px; border: 1px solid #000; border-radius: 5px; }
+    .form-container { display: flex; gap: 20px; }
+    .form-column { flex: 1; display: flex; flex-direction: column; }
+    input[type=text], input[type=date] { padding: 6px; margin-bottom: 10px; width: 100%; }
+    input[type=button] { padding: 6px 12px; margin-top: 10px; cursor: pointer; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    table, th, td { border: 1px solid #000; }
+    th, td { padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    .action-btn { padding: 4px 8px; margin-right: 4px; cursor: pointer; }
+    .delete-btn { background-color: red; color: white; border: none; }
+    .edit-btn { background-color: orange; color: white; border: none; }
+    .save-btn { background-color: green; color: white; border: none; }
+    .status-delivered { background-color: #c8e6c9; }
+    .status-pending { background-color: #fff9c4; }
+    .status-delayed { background-color: #ffcdd2; }
+</style>
+</head>
+<body>
+
+<!-- Logo -->
+<img src="logo.png" alt="Company Logo" class="logo">
+
+<h2>Track & Trace System - Admin View</h2>
+
+<div class="container">
+    <!-- Add Record Form -->
+    <div class="column">
+        <h3>Add New Record</h3>
+        <div class="form-container">
+            <div class="form-column">
+                <label>Requested By:</label>
+                <input type="text" id="requestedBy">
+                <label>Requested Date:</label>
+                <input type="date" id="requestedDate">
+                <label>Pickup Date:</label>
+                <input type="date" id="pickupDate">
+                <label>Unit:</label>
+                <input type="text" id="unit">
+                <label>Serial Number:</label>
+                <input type="text" id="serialNumber">
+                <label>Origin:</label>
+                <input type="text" id="origin">
+                <label>Destination:</label>
+                <input type="text" id="destination">
+            </div>
+            <div class="form-column">
+                <label>Shipping Lines:</label>
+                <input type="text" id="shippingLines">
+                <label>Origin Port ETD:</label>
+                <input type="date" id="etd">
+                <label>Origin Port ATD:</label>
+                <input type="date" id="atd">
+                <label>Destination Port ETA:</label>
+                <input type="date" id="eta">
+                <label>Destination Port ATA:</label>
+                <input type="date" id="ata">
+                <label>Actual Delivered:</label>
+                <input type="date" id="actualDelivered">
+                <label>Status:</label>
+                <input type="text" id="status">
+                <label>Remarks:</label>
+                <input type="text" id="remarks">
+            </div>
+        </div>
+        <input type="button" value="Add Record" onclick="addRecord()">
+        <input type="button" value="Download Excel" onclick="downloadExcel()">
+    </div>
+
+    <!-- Records Table -->
+    <div class="column">
+        <h3>Records</h3>
+        <table id="recordsTable">
+            <tr>
+                <th>Requested By</th>
+                <th>Requested Date</th>
+                <th>Pickup Date</th>
+                <th>Unit</th>
+                <th>Serial Number</th>
+                <th>Origin</th>
+                <th>Destination</th>
+                <th>Shipping Lines</th>
+                <th>Origin ETD</th>
+                <th>Origin ATD</th>
+                <th>Destination ETA</th>
+                <th>Destination ATA</th>
+                <th>Actual Delivered</th>
+                <th>Status</th>
+                <th>Remarks</th>
+                <th>Action</th>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<script>
+function generateId() { return '_' + Math.random().toString(36).substr(2, 9); }
+
+window.onload = function() {
+    let records = JSON.parse(localStorage.getItem('trackRecords')) || [];
+    records.forEach(record => addRowToTable(record));
+}
+
+function addRecord() {
+    let record = {
+        id: generateId(),
+        requestedBy: document.getElementById('requestedBy').value,
+        requestedDate: document.getElementById('requestedDate').value,
+        pickupDate: document.getElementById('pickupDate').value,
+        unit: document.getElementById('unit').value,
+        serialNumber: document.getElementById('serialNumber').value,
+        origin: document.getElementById('origin').value,
+        destination: document.getElementById('destination').value,
+        shippingLines: document.getElementById('shippingLines').value,
+        etd: document.getElementById('etd').value,
+        atd: document.getElementById('atd').value,
+        eta: document.getElementById('eta').value,
+        ata: document.getElementById('ata').value,
+        actualDelivered: document.getElementById('actualDelivered').value,
+        status: document.getElementById('status').value,
+        remarks: document.getElementById('remarks').value
+    };
+
+    if(!record.requestedBy || !record.unit){ alert("Fill Requested By & Unit"); return; }
+
+    let records = JSON.parse(localStorage.getItem('trackRecords')) || [];
+    records.push(record);
+    localStorage.setItem('trackRecords', JSON.stringify(records));
+    addRowToTable(record);
+
+    Object.keys(record).forEach(key => { if(key!=="id") document.getElementById(key).value=""; });
+}
+
+function addRowToTable(record) {
+    let table = document.getElementById("recordsTable");
+    let row = table.insertRow(-1);
+    row.setAttribute('data-id', record.id);
+
+    Object.keys(record).forEach(key => {
+        if(key!=="id") {
+            let cell = row.insertCell(-1);
+            cell.innerText = record[key];
+            if(key==="status") { // color-code status
+                let status = record[key].toLowerCase();
+                if(status.includes("delivered")) cell.className="status-delivered";
+                else if(status.includes("pending")) cell.className="status-pending";
+                else if(status.includes("delayed")) cell.className="status-delayed";
+            }
+        }
+    });
+
+    let actionCell = row.insertCell(-1);
+    let editBtn = document.createElement('button');
+    editBtn.innerText="Edit"; editBtn.className="action-btn edit-btn";
+    editBtn.onclick=function(){editRecord(row);};
+    let deleteBtn = document.createElement('button');
+    deleteBtn.innerText="Delete"; deleteBtn.className="action-btn delete-btn";
+    deleteBtn.onclick=function(){deleteRecord(record.id,row);};
+    actionCell.appendChild(editBtn); actionCell.appendChild(deleteBtn);
+}
+
+function editRecord(row){
+    for(let i=0;i<row.cells.length-1;i++){
+        let val = row.cells[i].innerText;
+        row.cells[i].innerHTML = /\d{4}-\d{2}-\d{2}/.test(val)? `<input type="date" value="${val}">`:`<input type="text" value="${val}">`;
+    }
+    let actionCell=row.cells[row.cells.length-1]; actionCell.innerHTML='';
+    let saveBtn=document.createElement('button'); saveBtn.innerText="Save"; saveBtn.className="action-btn save-btn";
+    saveBtn.onclick=function(){saveRecord(row);};
+    let cancelBtn=document.createElement('button'); cancelBtn.innerText="Cancel"; cancelBtn.className="action-btn delete-btn";
+    cancelBtn.onclick=function(){cancelEdit(row);};
+    actionCell.appendChild(saveBtn); actionCell.appendChild(cancelBtn);
+}
+
+function saveRecord(row){
+    let id=row.getAttribute('data-id');
+    let keys=['requestedBy','requestedDate','pickupDate','unit','serialNumber','origin','destination','shippingLines','etd','atd','eta','ata','actualDelivered','status','remarks'];
+    let updatedRecord={id:id};
+    keys.forEach((key,i)=>{ updatedRecord[key]=row.cells[i].children[0].value; row.cells[i].innerText=updatedRecord[key]; 
+        if(key==="status"){ // color-code status
+            let status = updatedRecord[key].toLowerCase();
+            row.cells[i].className='';
+            if(status.includes("delivered")) row.cells[i].className="status-delivered";
+            else if(status.includes("pending")) row.cells[i].className="status-pending";
+            else if(status.includes("delayed")) row.cells[i].className="status-delayed";
+        }
+    });
+
+    let records = JSON.parse(localStorage.getItem('trackRecords')) || [];
+    let index = records.findIndex(r=>r.id===id);
+    if(index!==-1){ records[index]=updatedRecord; localStorage.setItem('trackRecords', JSON.stringify(records)); }
+
+    let actionCell=row.cells[row.cells.length-1]; actionCell.innerHTML='';
+    let editBtn=document.createElement('button'); editBtn.innerText="Edit"; editBtn.className="action-btn edit-btn";
+    editBtn.onclick=function(){editRecord(row);};
+    let deleteBtn=document.createElement('button'); deleteBtn.innerText="Delete"; deleteBtn.className="action-btn delete-btn";
+    deleteBtn.onclick=function(){deleteRecord(id,row);};
+    actionCell.appendChild(editBtn); actionCell.appendChild(deleteBtn);
+}
+
+function cancelEdit(row){
+    let id=row.getAttribute('data-id');
+    let records=JSON.parse(localStorage.getItem('trackRecords'))||[];
+    let record=records.find(r=>r.id===id);
+    if(record){
+        let keys=['requestedBy','requestedDate','pickupDate','unit','serialNumber','origin','destination','shippingLines','etd','atd','eta','ata','actualDelivered','status','remarks'];
+        keys.forEach((key,i)=>{ row.cells[i].innerText=record[key]; 
+            if(key==="status"){
+                let status = record[key].toLowerCase();
+                row.cells[i].className='';
+                if(status.includes("delivered")) row.cells[i].className="status-delivered";
+                else if(status.includes("pending")) row.cells[i].className="status-pending";
+                else if(status.includes("delayed")) row.cells[i].className="status-delayed";
+            }
+        });
+    }
+    let actionCell=row.cells[row.cells.length-1]; actionCell.innerHTML='';
+    let editBtn=document.createElement('button'); editBtn.innerText="Edit"; editBtn.className="action-btn edit-btn";
+    editBtn.onclick=function(){editRecord(row);};
+    let deleteBtn=document.createElement('button'); deleteBtn.innerText="Delete"; deleteBtn.className="action-btn delete-btn";
+    deleteBtn.onclick=function(){deleteRecord(id,row);};
+    actionCell.appendChild(editBtn); actionCell.appendChild(deleteBtn);
+}
+
+function deleteRecord(id,row){
+    if(confirm("Delete this record?")){
+        let records=JSON.parse(localStorage.getItem('trackRecords'))||[];
+        records=records.filter(r=>r.id!==id);
+        localStorage.setItem('trackRecords', JSON.stringify(records));
+        row.remove();
+    }
+}
+
+function downloadExcel(){
+    let records=JSON.parse(localStorage.getItem('trackRecords'))||[];
+    if(records.length===0){ alert("No records to download!"); return; }
+
+    let headers=['Requested By','Requested Date','Pickup Date','Unit','Serial Number','Origin','Destination','Shipping Lines','Origin ETD','Origin ATD','Destination ETA','Destination ATA','Actual Delivered','Status','Remarks'];
+    let csvRows=[];
+    csvRows.push(headers.join(','));
+    records.forEach(record=>{
+        let row=headers.map(header=>{
+            let key=header.replace(/\s/g,''); key=key.charAt(0).toLowerCase()+key.slice(1);
+            return `"${record[key] || ''}"`;
+        });
+        csvRows.push(row.join(','));
+    });
+    let csvString=csvRows.join('\n');
+    let blob=new Blob([csvString], {type:'text/csv'});
+    let url=URL.createObjectURL(blob);
+    let a=document.createElement('a'); a.href=url; a.download='TrackAndTraceRecords.csv'; a.click();
+    URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>

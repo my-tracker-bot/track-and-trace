@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<!-- Logo -->
+<div style="text-align:center; margin-bottom: 20px;">
+    <img src="logo.png" alt="Company Logo" style="height:80px;">
+</div>
+
+<title>Track & Trace - User View</title>
+<style>
+    body { font-family: Arial; margin: 20px; background-color: #f4f4f4; }
+    h2 { text-align: center; }
+    .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    input[type=text] { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
+    button { padding: 10px 20px; border: none; background-color: #28a745; color: white; border-radius: 5px; cursor: pointer; }
+    button:hover { background-color: #218838; }
+    .result { margin-top: 20px; padding: 15px; border-radius: 5px; }
+    .not-found { background-color: #f8d7da; color: #721c24; }
+    .found { background-color: #d4edda; color: #155724; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    .status-delivered { color: green; font-weight: bold; }
+    .status-in-transit { color: orange; font-weight: bold; }
+    .status-delayed { color: red; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<h2>Track Your Cargo </h2>
+
+<div class="container">
+    <label for="serialNumber">Enter Serial Number:</label>
+    <input type="text" id="serialNumber" placeholder="e.g., 12345">
+    <button onclick="trackPackage()">Track Package</button>
+
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+function trackPackage() {
+    const input = document.getElementById('serialNumber').value.trim();
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = '';
+
+    if(!input){
+        resultDiv.textContent = "Please enter a Serial Number!";
+        resultDiv.className = 'result not-found';
+        return;
+    }
+
+    const records = JSON.parse(localStorage.getItem('trackRecords')) || [];
+    const matchedRecords = records.filter(r => r.serialNumber === input || r.unit === input);
+
+    if(matchedRecords.length === 0){
+        resultDiv.textContent = "No package found with that Serial Number.";
+        resultDiv.className = 'result not-found';
+        return;
+    }
+
+    resultDiv.className = 'result found';
+    matchedRecords.forEach(record => {
+        const table = document.createElement('table');
+        
+        // Function to return status with color
+        function formatStatus(status) {
+            const s = status.toLowerCase();
+            if(s.includes('delivered')) return `<span class="status-delivered">${status}</span>`;
+            if(s.includes('in transit') || s.includes('shipped')) return `<span class="status-in-transit">${status}</span>`;
+            if(s.includes('delayed')) return `<span class="status-delayed">${status}</span>`;
+            return status; // default color
+        }
+
+        table.innerHTML = `
+            <tr><th>Field</th><th>Value</th></tr>
+            <tr><td>Requested By</td><td>${record.requestedBy}</td></tr>
+            <tr><td>Requested Date</td><td>${record.requestedDate}</td></tr>
+            <tr><td>Pickup Date</td><td>${record.pickupDate}</td></tr>
+            <tr><td>Unit</td><td>${record.unit}</td></tr>
+            <tr><td>Serial Number</td><td>${record.serialNumber}</td></tr>
+            <tr><td>Origin</td><td>${record.origin}</td></tr>
+            <tr><td>Destination</td><td>${record.destination}</td></tr>
+            <tr><td>Shipping Lines</td><td>${record.shippingLines}</td></tr>
+            <tr><td>Origin ETD</td><td>${record.etd}</td></tr>
+            <tr><td>Origin ATD</td><td>${record.atd}</td></tr>
+            <tr><td>Destination ETA</td><td>${record.eta}</td></tr>
+            <tr><td>Destination ATA</td><td>${record.ata}</td></tr>
+            <tr><td>Actual Delivered</td><td>${record.actualDelivered}</td></tr>
+            <tr><td>Status</td><td>${formatStatus(record.status)}</td></tr>
+            <tr><td>Remarks</td><td>${record.remarks}</td></tr>
+        `;
+        resultDiv.appendChild(table);
+    });
+}
+</script>
+
+</body>
+</html>
