@@ -2,118 +2,162 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Track & Trace - Admin</title>
+<title>Track & Trace System</title>
 <style>
-    body { font-family: Arial; margin: 20px; }
-    h2,h3 { text-align: center; }
-    .logo { display: block; margin: 0 auto 20px; max-width: 200px; }
-    .container { display: flex; gap: 20px; }
-    .column { flex: 1; padding: 10px; border: 1px solid #000; border-radius: 5px; }
-    .form-container { display: flex; gap: 20px; }
-    .form-column { flex: 1; display: flex; flex-direction: column; }
-    input[type=text], input[type=date] { padding: 6px; margin-bottom: 10px; width: 100%; }
-    input[type=button] { padding: 6px 12px; margin-top: 10px; cursor: pointer; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    table, th, td { border: 1px solid #000; }
-    th, td { padding: 8px; text-align: left; }
-    th { background-color: #f2f2f2; }
-    .action-btn { padding: 4px 8px; margin-right: 4px; cursor: pointer; }
-    .delete-btn { background-color: red; color: white; border: none; }
-    .edit-btn { background-color: orange; color: white; border: none; }
-    .save-btn { background-color: green; color: white; border: none; }
-    .status-delivered { background-color: #c8e6c9; }
-    .status-pending { background-color: #fff9c4; }
-    .status-delayed { background-color: #ffcdd2; }
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f9f9f9;
+    }
+    h2 {
+        text-align: center;
+    }
+    .form-wrapper {
+        background: none;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        max-width: 2000px;
+        margin: 0 auto 20px;
+    }
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px 40px;
+    }
+    label {
+        font-weight: bold;
+        margin-top: 8px;
+        display: block;
+    }
+    input, select {
+        width: 100%;
+        padding: 6px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    .button-bar {
+        text-align: center;
+        margin-top: 15px;
+    }
+    .btn {
+        padding: 8px 14px;
+        border: none;
+        border-radius: 2px;
+        cursor: pointer;
+        color: white;
+        margin: 5px;
+    }
+    .save-btn { background-color: green; }
+    .delete-btn { background-color: red; }
+    .export-btn { background-color: #007bff; }
+    .import-btn { background-color: #ff9800; }
+    .save-btn:hover { background-color: darkgreen; }
+    .delete-btn:hover { background-color: darkred; }
+    .export-btn:hover { background-color: #0056b3; }
+    .import-btn:hover { background-color: #e68900; }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        margin-top: 10px;
+    }
+    th, td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+    }
+    th {
+        background-color: #f2f2f2;
+        position: sticky;
+        top: 0;
+    }
+    tr:hover { background-color: #f1f1f1; cursor: pointer; }
+    .selected-row { background-color: #d9edf7 !important; }
 </style>
 </head>
 <body>
 
-<!-- Logo -->
-<img src="logo.png" alt="Company Logo" class="logo">
+<h2>📦 Track & Trace System</h2>
 
-<h2>Track & Trace System - Admin View</h2>
-
-<div class="container">
-    <!-- Add Record Form -->
-    <div class="column">
-        <h3>Add New Record</h3>
-        <div class="form-container">
-            <div class="form-column">
-                <label>Requested By:</label>
-                <input type="text" id="requestedBy">
-                <label>Requested Date:</label>
-                <input type="date" id="requestedDate">
-                <label>Pickup Date:</label>
-                <input type="date" id="pickupDate">
-                <label>Unit:</label>
-                <input type="text" id="unit">
-                <label>Serial Number:</label>
-                <input type="text" id="serialNumber">
-                <label>Origin:</label>
-                <input type="text" id="origin">
-                <label>Destination:</label>
-                <input type="text" id="destination">
-            </div>
-            <div class="form-column">
-                <label>Shipping Lines:</label>
-                <input type="text" id="shippingLines">
-                <label>Origin Port ETD:</label>
-                <input type="date" id="etd">
-                <label>Origin Port ATD:</label>
-                <input type="date" id="atd">
-                <label>Destination Port ETA:</label>
-                <input type="date" id="eta">
-                <label>Destination Port ATA:</label>
-                <input type="date" id="ata">
-                <label>Actual Delivered:</label>
-                <input type="date" id="actualDelivered">
-                <label>Status:</label>
-                <input type="text" id="status">
-                <label>Remarks:</label>
-                <input type="text" id="remarks">
-            </div>
+<!-- FORM -->
+<div class="form-wrapper">
+    <div class="form-grid">
+        <div>
+            <label>Requested By</label><input type="text" id="requestedBy">
+            <label>Requested Date</label><input type="date" id="requestedDate">
+            <label>Pickup Date</label><input type="date" id="pickupDate">
+            <label>Unit</label><input type="text" id="unit">
+            <label>Serial Number</label><input type="text" id="serialNumber">
+            <label>Origin</label><input type="text" id="origin">
+            <label>Destination</label><input type="text" id="destination">
         </div>
-        <input type="button" value="Add Record" onclick="addRecord()">
-        <input type="button" value="Download Excel" onclick="downloadExcel()">
+
+        <div>
+            <label>Shipping Lines</label><input type="text" id="shippingLines">
+            <label>ETD</label><input type="date" id="etd">
+            <label>ATD</label><input type="date" id="atd">
+            <label>ETA</label><input type="date" id="eta">
+            <label>ATA</label><input type="date" id="ata">
+            <label>Actual Delivered</label><input type="date" id="actualDelivered">
+            <label>Status</label>
+            <select id="status">
+                <option value="">Select...</option>
+                <option value="Pending">Pending</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Delayed">Delayed</option>
+            </select>
+            <label>Remarks</label><input type="text" id="remarks">
+        </div>
     </div>
 
-    <!-- Records Table -->
-    <div class="column">
-        <h3>Records</h3>
-        <table id="recordsTable">
-            <tr>
-                <th>Requested By</th>
-                <th>Requested Date</th>
-                <th>Pickup Date</th>
-                <th>Unit</th>
-                <th>Serial Number</th>
-                <th>Origin</th>
-                <th>Destination</th>
-                <th>Shipping Lines</th>
-                <th>Origin ETD</th>
-                <th>Origin ATD</th>
-                <th>Destination ETA</th>
-                <th>Destination ATA</th>
-                <th>Actual Delivered</th>
-                <th>Status</th>
-                <th>Remarks</th>
-                <th>Action</th>
-            </tr>
-        </table>
+    <div class="button-bar">
+        <input type="button" class="btn save-btn" id="saveBtn" value="Save / Update" onclick="saveRecord()">
+        <input type="button" class="btn delete-btn" id="deleteBtn" value="Delete" onclick="deleteRecord()">
+        <input type="button" class="btn export-btn" value="Export Data" onclick="exportData()">
+        <input type="button" class="btn import-btn" value="Import Data" onclick="importData()">
     </div>
 </div>
 
-<script>
-function generateId() { return '_' + Math.random().toString(36).substr(2, 9); }
+<!-- RECORDS TABLE -->
+<div class="form-wrapper">
+    <h3 style="text-align:center;">📋 Records</h3>
+    <table id="recordsTable">
+        <tr>
+            <th>Requested By</th>
+            <th>Requested Date</th>
+            <th>Pickup Date</th>
+            <th>Unit</th>
+            <th>Serial Number</th>
+            <th>Origin</th>
+            <th>Destination</th>
+            <th>Shipping Lines</th>
+            <th>ETD</th>
+            <th>ATD</th>
+            <th>ETA</th>
+            <th>ATA</th>
+            <th>Actual Delivered</th>
+            <th>Status</th>
+            <th>Remarks</th>
+        </tr>
+    </table>
+</div>
 
-window.onload = function() {
-    let records = JSON.parse(localStorage.getItem('trackRecords')) || [];
-    records.forEach(record => addRowToTable(record));
+<script>
+let selectedId = null;
+
+// Load records on startup
+window.onload = refreshTable;
+
+function generateId() {
+    return '_' + Math.random().toString(36).substr(2, 9);
 }
 
-function addRecord() {
-    let record = {
-        id: generateId(),
+function getFormData() {
+    return {
+        id: selectedId || generateId(),
         requestedBy: document.getElementById('requestedBy').value,
         requestedDate: document.getElementById('requestedDate').value,
         pickupDate: document.getElementById('pickupDate').value,
@@ -130,136 +174,150 @@ function addRecord() {
         status: document.getElementById('status').value,
         remarks: document.getElementById('remarks').value
     };
+}
 
-    if(!record.requestedBy || !record.unit){ alert("Fill Requested By & Unit"); return; }
-
+// ✅ Save or update record
+function saveRecord() {
     let records = JSON.parse(localStorage.getItem('trackRecords')) || [];
-    records.push(record);
-    localStorage.setItem('trackRecords', JSON.stringify(records));
-    addRowToTable(record);
+    const formData = getFormData();
 
-    Object.keys(record).forEach(key => { if(key!=="id") document.getElementById(key).value=""; });
+    if (!formData.requestedBy || !formData.unit) {
+        alert("Please fill 'Requested By' and 'Unit'.");
+        return;
+    }
+
+    const index = records.findIndex(r => r.id === selectedId);
+    if (index >= 0) {
+        records[index] = formData;
+        showTempMessage("✅ Updated!", "saveBtn", "Save / Update");
+    } else {
+        records.push(formData);
+        showTempMessage("✅ Saved!", "saveBtn", "Save / Update");
+    }
+
+    localStorage.setItem('trackRecords', JSON.stringify(records));
+    refreshTable();
+    clearForm();
+    selectedId = null;
+}
+
+// ✅ Delete record
+function deleteRecord() {
+    if (!selectedId) {
+        alert("Select a record first.");
+        return;
+    }
+
+    if (confirm("Are you sure you want to delete this record?")) {
+        let records = JSON.parse(localStorage.getItem('trackRecords')) || [];
+        records = records.filter(r => r.id !== selectedId);
+        localStorage.setItem('trackRecords', JSON.stringify(records));
+        refreshTable();
+        clearForm();
+        showTempMessage("🗑️ Deleted!", "deleteBtn", "Delete");
+        selectedId = null;
+    }
+}
+
+// ✅ Export data
+function exportData() {
+    const data = localStorage.getItem('trackRecords') || '[]';
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'trackRecords.json';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// ✅ Import data
+function importData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+            try {
+                const newData = JSON.parse(reader.result);
+                if (Array.isArray(newData)) {
+                    localStorage.setItem('trackRecords', JSON.stringify(newData));
+                    refreshTable();
+                    alert("✅ Data imported successfully!");
+                } else {
+                    alert("Invalid file format.");
+                }
+            } catch (err) {
+                alert("Error reading file.");
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+// ✅ Temporary button feedback
+function showTempMessage(msg, btnId, originalText) {
+    const btn = document.getElementById(btnId);
+    btn.value = msg;
+    btn.disabled = true;
+    setTimeout(() => {
+        btn.value = originalText;
+        btn.disabled = false;
+    }, 1200);
+}
+
+// Refresh table
+function refreshTable() {
+    const table = document.getElementById("recordsTable");
+    table.innerHTML = `
+    <tr>
+        <th>Requested By</th>
+        <th>Requested Date</th>
+        <th>Pickup Date</th>
+        <th>Unit</th>
+        <th>Serial Number</th>
+        <th>Origin</th>
+        <th>Destination</th>
+        <th>Shipping Lines</th>
+        <th>ETD</th>
+        <th>ATD</th>
+        <th>ETA</th>
+        <th>ATA</th>
+        <th>Actual Delivered</th>
+        <th>Status</th>
+        <th>Remarks</th>
+    </tr>`;
+    const records = JSON.parse(localStorage.getItem('trackRecords')) || [];
+    records.forEach(addRowToTable);
 }
 
 function addRowToTable(record) {
-    let table = document.getElementById("recordsTable");
-    let row = table.insertRow(-1);
+    const table = document.getElementById("recordsTable");
+    const row = table.insertRow(-1);
     row.setAttribute('data-id', record.id);
-
-    Object.keys(record).forEach(key => {
-        if(key!=="id") {
-            let cell = row.insertCell(-1);
-            cell.innerText = record[key];
-            if(key==="status") { // color-code status
-                let status = record[key].toLowerCase();
-                if(status.includes("delivered")) cell.className="status-delivered";
-                else if(status.includes("pending")) cell.className="status-pending";
-                else if(status.includes("delayed")) cell.className="status-delayed";
+    const keys = ['requestedBy','requestedDate','pickupDate','unit','serialNumber','origin','destination','shippingLines','etd','atd','eta','ata','actualDelivered','status','remarks'];
+    keys.forEach(key => {
+        const cell = row.insertCell(-1);
+        cell.innerText = record[key] || '';
+    });
+    row.onclick = function() {
+        const rows = table.querySelectorAll("tr");
+        rows.forEach(r => r.classList.remove("selected-row"));
+        row.classList.add("selected-row");
+        selectedId = record.id;
+        for (let key in record) {
+            if (document.getElementById(key)) {
+                document.getElementById(key).value = record[key];
             }
         }
-    });
-
-    let actionCell = row.insertCell(-1);
-    let editBtn = document.createElement('button');
-    editBtn.innerText="Edit"; editBtn.className="action-btn edit-btn";
-    editBtn.onclick=function(){editRecord(row);};
-    let deleteBtn = document.createElement('button');
-    deleteBtn.innerText="Delete"; deleteBtn.className="action-btn delete-btn";
-    deleteBtn.onclick=function(){deleteRecord(record.id,row);};
-    actionCell.appendChild(editBtn); actionCell.appendChild(deleteBtn);
+    };
 }
 
-function editRecord(row){
-    for(let i=0;i<row.cells.length-1;i++){
-        let val = row.cells[i].innerText;
-        row.cells[i].innerHTML = /\d{4}-\d{2}-\d{2}/.test(val)? `<input type="date" value="${val}">`:`<input type="text" value="${val}">`;
-    }
-    let actionCell=row.cells[row.cells.length-1]; actionCell.innerHTML='';
-    let saveBtn=document.createElement('button'); saveBtn.innerText="Save"; saveBtn.className="action-btn save-btn";
-    saveBtn.onclick=function(){saveRecord(row);};
-    let cancelBtn=document.createElement('button'); cancelBtn.innerText="Cancel"; cancelBtn.className="action-btn delete-btn";
-    cancelBtn.onclick=function(){cancelEdit(row);};
-    actionCell.appendChild(saveBtn); actionCell.appendChild(cancelBtn);
-}
-
-function saveRecord(row){
-    let id=row.getAttribute('data-id');
-    let keys=['requestedBy','requestedDate','pickupDate','unit','serialNumber','origin','destination','shippingLines','etd','atd','eta','ata','actualDelivered','status','remarks'];
-    let updatedRecord={id:id};
-    keys.forEach((key,i)=>{ updatedRecord[key]=row.cells[i].children[0].value; row.cells[i].innerText=updatedRecord[key]; 
-        if(key==="status"){ // color-code status
-            let status = updatedRecord[key].toLowerCase();
-            row.cells[i].className='';
-            if(status.includes("delivered")) row.cells[i].className="status-delivered";
-            else if(status.includes("pending")) row.cells[i].className="status-pending";
-            else if(status.includes("delayed")) row.cells[i].className="status-delayed";
-        }
-    });
-
-    let records = JSON.parse(localStorage.getItem('trackRecords')) || [];
-    let index = records.findIndex(r=>r.id===id);
-    if(index!==-1){ records[index]=updatedRecord; localStorage.setItem('trackRecords', JSON.stringify(records)); }
-
-    let actionCell=row.cells[row.cells.length-1]; actionCell.innerHTML='';
-    let editBtn=document.createElement('button'); editBtn.innerText="Edit"; editBtn.className="action-btn edit-btn";
-    editBtn.onclick=function(){editRecord(row);};
-    let deleteBtn=document.createElement('button'); deleteBtn.innerText="Delete"; deleteBtn.className="action-btn delete-btn";
-    deleteBtn.onclick=function(){deleteRecord(id,row);};
-    actionCell.appendChild(editBtn); actionCell.appendChild(deleteBtn);
-}
-
-function cancelEdit(row){
-    let id=row.getAttribute('data-id');
-    let records=JSON.parse(localStorage.getItem('trackRecords'))||[];
-    let record=records.find(r=>r.id===id);
-    if(record){
-        let keys=['requestedBy','requestedDate','pickupDate','unit','serialNumber','origin','destination','shippingLines','etd','atd','eta','ata','actualDelivered','status','remarks'];
-        keys.forEach((key,i)=>{ row.cells[i].innerText=record[key]; 
-            if(key==="status"){
-                let status = record[key].toLowerCase();
-                row.cells[i].className='';
-                if(status.includes("delivered")) row.cells[i].className="status-delivered";
-                else if(status.includes("pending")) row.cells[i].className="status-pending";
-                else if(status.includes("delayed")) row.cells[i].className="status-delayed";
-            }
-        });
-    }
-    let actionCell=row.cells[row.cells.length-1]; actionCell.innerHTML='';
-    let editBtn=document.createElement('button'); editBtn.innerText="Edit"; editBtn.className="action-btn edit-btn";
-    editBtn.onclick=function(){editRecord(row);};
-    let deleteBtn=document.createElement('button'); deleteBtn.innerText="Delete"; deleteBtn.className="action-btn delete-btn";
-    deleteBtn.onclick=function(){deleteRecord(id,row);};
-    actionCell.appendChild(editBtn); actionCell.appendChild(deleteBtn);
-}
-
-function deleteRecord(id,row){
-    if(confirm("Delete this record?")){
-        let records=JSON.parse(localStorage.getItem('trackRecords'))||[];
-        records=records.filter(r=>r.id!==id);
-        localStorage.setItem('trackRecords', JSON.stringify(records));
-        row.remove();
-    }
-}
-
-function downloadExcel(){
-    let records=JSON.parse(localStorage.getItem('trackRecords'))||[];
-    if(records.length===0){ alert("No records to download!"); return; }
-
-    let headers=['Requested By','Requested Date','Pickup Date','Unit','Serial Number','Origin','Destination','Shipping Lines','Origin ETD','Origin ATD','Destination ETA','Destination ATA','Actual Delivered','Status','Remarks'];
-    let csvRows=[];
-    csvRows.push(headers.join(','));
-    records.forEach(record=>{
-        let row=headers.map(header=>{
-            let key=header.replace(/\s/g,''); key=key.charAt(0).toLowerCase()+key.slice(1);
-            return `"${record[key] || ''}"`;
-        });
-        csvRows.push(row.join(','));
-    });
-    let csvString=csvRows.join('\n');
-    let blob=new Blob([csvString], {type:'text/csv'});
-    let url=URL.createObjectURL(blob);
-    let a=document.createElement('a'); a.href=url; a.download='TrackAndTraceRecords.csv'; a.click();
-    URL.revokeObjectURL(url);
+function clearForm() {
+    document.querySelectorAll('input, select').forEach(el => el.value = '');
 }
 </script>
 </body>
